@@ -9,7 +9,7 @@ export default function App() {
           <img
             src="/logo.png"
             alt="ONN Logo"
-            className="w-12 h-12 object-contain"
+            className="w-28 h-28 object-contain"
           />
 
           <div>
