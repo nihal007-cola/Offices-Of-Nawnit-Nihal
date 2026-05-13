@@ -1,6 +1,21 @@
+import { useEffect, useState } from "react"
+
 export default function App() {
 
+  const [showChat, setShowChat] = useState(false)
+
+  useEffect(() => {
+
+    const timer = setTimeout(() => {
+      setShowChat(true)
+    }, 5000)
+
+    return () => clearTimeout(timer)
+
+  }, [])
+
   const products = [
+
     {
       title: "ERP Layer",
       price: "₹75K – ₹12L+",
@@ -113,22 +128,23 @@ export default function App() {
         "Workflow Apps"
       ]
     }
+
   ]
 
   return (
 
-    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+    <div className="bg-black text-white overflow-x-hidden">
 
       {/* STICKY NAVBAR */}
 
-      <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-2 border-b border-white/10 bg-black/90 backdrop-blur-xl">
+      <nav className="sticky top-0 z-[9999] flex items-center justify-between px-6 py-2 border-b border-white/10 bg-black/90 backdrop-blur-2xl">
 
         <div className="flex items-center gap-4">
 
           <img
             src="/logo.png"
             alt="ONN Logo"
-            className="w-16 md:w-20 h-auto object-contain"
+            className="w-20 md:w-24 h-auto object-contain"
           />
 
           <div>
@@ -147,19 +163,31 @@ export default function App() {
 
         <div className="hidden md:flex gap-8 text-sm text-white/70">
 
-          <a href="#products" className="hover:text-cyan-400 transition">
+          <a
+            href="#products"
+            className="hover:text-cyan-400 transition"
+          >
             Products
           </a>
 
-          <a href="#systems" className="hover:text-cyan-400 transition">
+          <a
+            href="#systems"
+            className="hover:text-cyan-400 transition"
+          >
             Systems
           </a>
 
-          <a href="#pricing" className="hover:text-cyan-400 transition">
+          <a
+            href="#pricing"
+            className="hover:text-cyan-400 transition"
+          >
             Pricing
           </a>
 
-          <a href="#contact" className="hover:text-cyan-400 transition">
+          <a
+            href="#contact"
+            className="hover:text-cyan-400 transition"
+          >
             Contact
           </a>
 
@@ -169,7 +197,7 @@ export default function App() {
 
       {/* HERO */}
 
-      <section className="relative px-8 py-24 md:px-20 min-h-screen">
+      <section className="relative px-8 py-24 md:px-20 min-h-[120vh]">
 
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[900px] bg-cyan-500/10 blur-[140px] rounded-full"></div>
 
@@ -199,8 +227,6 @@ export default function App() {
             dashboards, and execution pipelines into unified digital infrastructure.
 
           </p>
-
-          {/* BUTTONS */}
 
           <div className="flex flex-wrap gap-4 mt-10">
 
@@ -278,11 +304,13 @@ export default function App() {
                       key={i}
                       className="text-sm text-white/70 flex items-start gap-2"
                     >
+
                       <span className="text-cyan-400">
                         •
                       </span>
 
                       {detail}
+
                     </div>
 
                   ))}
@@ -332,6 +360,7 @@ export default function App() {
           <div className="grid md:grid-cols-3 gap-6 mt-14">
 
             <div className="p-6 rounded-2xl border border-white/10 bg-black/30">
+
               <h3 className="text-cyan-400 text-xl font-bold">
                 AI Reporting
               </h3>
@@ -340,9 +369,11 @@ export default function App() {
                 Executive summaries, operational insights,
                 and production analytics.
               </p>
+
             </div>
 
             <div className="p-6 rounded-2xl border border-white/10 bg-black/30">
+
               <h3 className="text-cyan-400 text-xl font-bold">
                 AI Workflow Intelligence
               </h3>
@@ -351,9 +382,11 @@ export default function App() {
                 Intelligent operational flow suggestions
                 and escalation detection.
               </p>
+
             </div>
 
             <div className="p-6 rounded-2xl border border-white/10 bg-black/30">
+
               <h3 className="text-cyan-400 text-xl font-bold">
                 AI Communication
               </h3>
@@ -362,6 +395,7 @@ export default function App() {
                 AI-assisted buyer communication,
                 summaries, and automation support.
               </p>
+
             </div>
 
           </div>
@@ -436,6 +470,77 @@ export default function App() {
 
       </section>
 
+      {/* JIM AI POPUP */}
+
+      {
+        showChat && (
+
+          <div className="fixed bottom-6 right-6 z-[9999] w-[360px] rounded-3xl border border-cyan-400/20 bg-black/95 backdrop-blur-2xl shadow-2xl overflow-hidden">
+
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+
+              <div>
+
+                <div className="text-cyan-400 font-black text-lg">
+                  JIM
+                </div>
+
+                <div className="text-xs text-white/50">
+                  ONN AI Executive Assistant
+                </div>
+
+              </div>
+
+              <button
+                onClick={() => setShowChat(false)}
+                className="text-white/40 hover:text-white text-2xl"
+              >
+                ×
+              </button>
+
+            </div>
+
+            <div className="p-5 space-y-4">
+
+              <div className="bg-cyan-400/10 border border-cyan-400/20 rounded-2xl p-4 text-sm text-white/80 leading-relaxed">
+
+                Hello. I'm Jim.
+
+                I help businesses understand ONN operational systems,
+                ERP integrations, workflow automation,
+                factory management systems,
+                dashboards, reporting systems,
+                CRM infrastructure, SaaS platforms,
+                AI operational intelligence,
+                and manufacturing execution workflows.
+
+              </div>
+
+              <textarea
+                placeholder="Ask Jim about ONN systems..."
+                className="w-full h-28 bg-white/5 border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-cyan-400 resize-none"
+              />
+
+              <button className="w-full py-3 rounded-2xl bg-cyan-400 text-black font-black hover:bg-cyan-300 transition">
+                Start AI Consultation
+              </button>
+
+              <div className="text-[11px] text-white/30 leading-relaxed">
+
+                Live conversation transcripts can later be routed
+                directly to Telegram using OpenAI + Telegram Bot integration.
+
+              </div>
+
+            </div>
+
+          </div>
+
+        )
+      }
+
     </div>
+
   )
+
 }
