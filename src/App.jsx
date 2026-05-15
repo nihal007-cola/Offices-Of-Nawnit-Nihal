@@ -1,10 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function App() {
 
   const API_URL = "/api"
-
-  const [showChat, setShowChat] = useState(false)
 
   const [sendingInquiry, setSendingInquiry] =
     useState(false)
@@ -12,19 +10,11 @@ export default function App() {
   const [inquirySuccess, setInquirySuccess] =
     useState(false)
 
-  const [jimLoading, setJimLoading] =
-    useState(false)
-
-  const [jimInput, setJimInput] =
-    useState("")
-
-  const [messages, setMessages] =
-    useState([])
-
   const [mobileMenu, setMobileMenu] =
     useState(false)
 
-  const messagesEndRef = useRef(null)
+  const [showONNModal, setShowONNModal] =
+    useState(false)
 
   const [form, setForm] = useState({
 
@@ -36,70 +26,17 @@ export default function App() {
 
   })
 
-  const sessionId = useMemo(() => {
-
-    let existing =
-      localStorage.getItem("onn_jim_session")
-
-    if (!existing) {
-
-      existing =
-        "JIM-" +
-        Date.now()
-
-      localStorage.setItem(
-        "onn_jim_session",
-        existing
-      )
-
-    }
-
-    return existing
-
-  }, [])
-
   useEffect(() => {
 
     const timer = setTimeout(() => {
 
-      setShowChat(true)
-
-      if (messages.length === 0) {
-
-        setMessages([
-
-          {
-
-            sender: "jim",
-
-            text:
-`Hello. I'm Jim.
-
-I help businesses understand ONN operational systems, ERP workflows, inventory visibility, dashboards, workflow automation, reporting systems, production tracking, and manufacturing operations.
-
-How can ONN assist your operational infrastructure today?`
-
-          }
-
-        ])
-
-      }
+      setShowONNModal(true)
 
     }, 5000)
 
     return () => clearTimeout(timer)
 
   }, [])
-
-  useEffect(() => {
-
-    messagesEndRef.current?.scrollIntoView({
-
-      behavior: "smooth"
-
-    })
-
-  }, [messages])
 
   const products = [
 
@@ -169,10 +106,6 @@ How can ONN assist your operational infrastructure today?`
       !form.requirement
     ) {
 
-      alert(
-        "Please complete required fields."
-      )
-
       return
 
     }
@@ -227,10 +160,6 @@ How can ONN assist your operational infrastructure today?`
           text
         )
 
-        alert(
-          "Backend returned invalid response."
-        )
-
         return
 
       }
@@ -238,6 +167,12 @@ How can ONN assist your operational infrastructure today?`
       if (data.success) {
 
         setInquirySuccess(true)
+
+        setTimeout(() => {
+
+          setInquirySuccess(false)
+
+        }, 5000)
 
         setForm({
 
@@ -249,168 +184,15 @@ How can ONN assist your operational infrastructure today?`
 
         })
 
-      } else {
-
-        alert(
-          data.error ||
-          "Inquiry submission failed."
-        )
-
       }
 
     } catch (error) {
 
       console.error(error)
-
-      alert(
-        "Server connection failed."
-      )
 
     } finally {
 
       setSendingInquiry(false)
-
-    }
-
-  }
-
-  async function sendJimMessage() {
-
-    if (!jimInput.trim()) return
-
-    const userMessage = {
-
-      sender: "user",
-      text: jimInput
-
-    }
-
-    setMessages(prev => [
-
-      ...prev,
-      userMessage
-
-    ])
-
-    const currentInput = jimInput
-
-    setJimInput("")
-
-    try {
-
-      setJimLoading(true)
-
-      const response =
-        await fetch(API_URL, {
-
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-
-            action:
-              "jim_message",
-
-            sessionId,
-
-            message:
-              currentInput,
-
-            source:
-              window.location.href
-
-          })
-
-        })
-
-      const text =
-        await response.text()
-
-      console.log(
-        "RAW JIM RESPONSE:",
-        text
-      )
-
-      let data = {}
-
-      try {
-
-        data =
-          JSON.parse(text)
-
-      } catch (error) {
-
-        console.error(
-          "INVALID JSON:",
-          text
-        )
-
-        setMessages(prev => [
-
-          ...prev,
-
-          {
-
-            sender: "jim",
-
-            text:
-              "Operational backend returned invalid response."
-
-          }
-
-        ])
-
-        return
-
-      }
-
-      if (data.success) {
-
-        setMessages(prev => [
-
-          ...prev,
-
-          {
-
-            sender: "jim",
-
-            text: data.reply
-
-          }
-
-        ])
-
-      } else {
-
-        setMessages(prev => [
-
-          ...prev,
-
-          {
-
-            sender: "jim",
-
-            text:
-              data.error ||
-              "Operational processing failed."
-
-          }
-
-        ])
-
-      }
-
-    } catch (error) {
-
-      console.error(error)
-
-    } finally {
-
-      setJimLoading(false)
 
     }
 
@@ -438,6 +220,8 @@ How can ONN assist your operational infrastructure today?`
   return (
 
     <div className="bg-[#020617] text-white overflow-x-hidden">
+
+      {/* BACKGROUND */}
 
       <div className="fixed inset-0 pointer-events-none">
 
@@ -873,19 +657,6 @@ How can ONN assist your operational infrastructure today?`
 
           </button>
 
-          {
-            inquirySuccess && (
-
-              <div className="mt-6 text-cyan-400 font-semibold">
-
-                Inquiry submitted successfully.
-                ONN has received your request.
-
-              </div>
-
-            )
-          }
-
         </div>
 
       </section>
@@ -920,121 +691,121 @@ How can ONN assist your operational infrastructure today?`
 
       </footer>
 
-      {/* JIM */}
+      {/* ONNWORK POPUP */}
 
       {
-        showChat && (
+        showONNModal && (
 
-          <div className="fixed bottom-6 right-6 z-[999999] w-[380px] max-w-[calc(100vw-24px)] rounded-[30px] border border-cyan-400/20 bg-black/95 backdrop-blur-2xl shadow-2xl overflow-hidden">
+          <div className="fixed inset-0 z-[99999999] flex items-center justify-center bg-black/80 backdrop-blur-sm px-5">
 
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+            <div className="relative w-full max-w-[720px] overflow-hidden rounded-[40px] border border-red-500/20 bg-[#0b0712] shadow-[0_0_120px_rgba(255,0,0,0.4)]">
 
-              <div>
+              <div className="absolute top-[-180px] right-[-100px] w-[420px] h-[420px] rounded-full bg-red-500/30 blur-[120px]"></div>
 
-                <div className="text-cyan-400 text-xl font-black">
-
-                  JIM
-
-                </div>
-
-                <div className="text-xs text-white/50">
-
-                  ONN Executive AI Consultant
-
-                </div>
-
-              </div>
+              <div className="absolute bottom-[-160px] left-[-120px] w-[320px] h-[320px] rounded-full bg-orange-500/10 blur-[100px]"></div>
 
               <button
                 onClick={() =>
-                  setShowChat(false)
+                  setShowONNModal(false)
                 }
-                className="text-2xl text-white/40 hover:text-white"
+                className="absolute top-6 right-6 z-20 flex items-center justify-center w-14 h-14 rounded-full bg-[#1d0b12] border border-red-500/30 text-red-500 text-3xl font-black hover:bg-red-600 hover:text-white transition"
               >
+
                 ×
-              </button>
-
-            </div>
-
-            <div className="h-[360px] overflow-y-auto p-5 space-y-4">
-
-              {
-                messages.map((msg, index) => (
-
-                  <div
-                    key={index}
-                    className={
-                      msg.sender === "user"
-                        ? "flex justify-end"
-                        : "flex justify-start"
-                    }
-                  >
-
-                    <div
-                      className={
-                        msg.sender === "user"
-                          ? "max-w-[85%] bg-cyan-400 text-black rounded-2xl px-4 py-3 text-sm"
-                          : "max-w-[85%] bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-sm text-white/80 whitespace-pre-line"
-                      }
-                    >
-
-                      {msg.text}
-
-                    </div>
-
-                  </div>
-
-                ))
-              }
-
-              {
-                jimLoading && (
-
-                  <div className="text-cyan-400 text-sm">
-
-                    Jim is analyzing operational requirements...
-
-                  </div>
-
-                )
-              }
-
-              <div ref={messagesEndRef}></div>
-
-            </div>
-
-            <div className="border-t border-white/10 p-4">
-
-              <textarea
-                value={jimInput}
-                onChange={(e) =>
-                  setJimInput(
-                    e.target.value
-                  )
-                }
-                placeholder="Ask Jim about ERP systems, workflow automation, dashboards, inventory systems, reporting, factory operations..."
-                className="w-full h-24 resize-none bg-white/5 border border-white/10 rounded-2xl px-4 py-3 outline-none focus:border-cyan-400"
-              />
-
-              <button
-                onClick={sendJimMessage}
-                disabled={jimLoading}
-                className="w-full mt-4 py-3 rounded-2xl bg-cyan-400 text-black font-black hover:bg-cyan-300 transition disabled:opacity-50"
-              >
-
-                {
-                  jimLoading
-                    ? "Processing..."
-                    : "Start AI Consultation"
-                }
 
               </button>
 
-              <div className="mt-3 text-[11px] text-white/30 leading-relaxed">
+              <div className="relative z-10 px-8 md:px-16 py-16 md:py-20 text-center">
 
-                Live conversations are securely logged into ONN operational infrastructure and can be escalated directly to executive operators via Telegram relay systems.
+                <div className="inline-flex items-center justify-center px-6 py-3 rounded-full bg-red-500 text-white text-[11px] font-black tracking-[0.25em] uppercase shadow-[0_0_35px_rgba(255,0,0,0.6)]">
+
+                  Immediate Enterprise Support
+
+                </div>
+
+                <h2 className="mt-10 text-[48px] md:text-[82px] leading-[0.88] tracking-[-0.06em] font-black text-white">
+
+                  Need Immediate
+
+                  <span className="block text-red-500 drop-shadow-[0_0_35px_rgba(255,0,0,0.9)]">
+
+                    Solutions?
+
+                  </span>
+
+                </h2>
+
+                <p className="mt-8 max-w-2xl mx-auto text-[16px] md:text-[20px] leading-[1.9] text-white/70">
+
+                  ERP systems,
+                  operational intelligence,
+                  workflow automation,
+                  reporting infrastructure,
+                  production tracking and enterprise execution systems.
+
+                </p>
+
+                <a
+                  href="https://jamesmoriarty.in/onnwork"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative inline-flex items-center justify-center mt-12 overflow-hidden rounded-2xl bg-gradient-to-r from-red-700 via-red-500 to-red-600 px-14 py-6 text-lg md:text-xl font-black tracking-[0.08em] text-white shadow-[0_0_70px_rgba(255,0,0,0.9)] hover:scale-[1.04] transition duration-300"
+                >
+
+                  <div className="absolute inset-0 animate-pulse bg-white/10"></div>
+
+                  <span className="relative z-10">
+
+                    VISIT ONNwork
+
+                  </span>
+
+                </a>
+
+                <div className="mt-10 text-sm text-white/35">
+
+                  Continue browsing Offices of Nawnit Nihal
+
+                </div>
 
               </div>
+
+            </div>
+
+          </div>
+
+        )
+      }
+
+      {/* SUCCESS POPUP */}
+
+      {
+        inquirySuccess && (
+
+          <div className="fixed top-8 right-8 z-[99999999] w-[390px] max-w-[calc(100vw-24px)] overflow-hidden rounded-[32px] bg-[#04150f] border border-emerald-400/20 shadow-[0_0_80px_rgba(16,185,129,0.35)]">
+
+            <div className="absolute top-[-120px] right-[-80px] w-[240px] h-[240px] rounded-full bg-emerald-400/30 blur-[100px]"></div>
+
+            <div className="relative z-10 px-7 py-8">
+
+              <div className="w-16 h-16 rounded-full bg-emerald-400 text-black text-3xl font-black flex items-center justify-center shadow-[0_0_40px_rgba(16,185,129,0.6)]">
+
+                ✓
+
+              </div>
+
+              <h3 className="mt-5 text-3xl font-black text-white">
+
+                Inquiry Submitted
+
+              </h3>
+
+              <p className="mt-4 text-white/70 leading-[1.8]">
+
+                Offices of Nawnit Nihal has received your enterprise inquiry.
+                An executive will contact you shortly.
+
+              </p>
 
             </div>
 
