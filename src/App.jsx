@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import ONNIndiaDesk from "./pages/ONNIndiaDesk"
 
 export default function App() {
 
@@ -226,6 +227,13 @@ export default function App() {
 
     setMobileMenu(false)
 
+  }
+
+  if (
+    window.location.pathname ===
+    "/indian-desk"
+  ) {
+    return <ONNIndiaDesk />
   }
 
   return (
